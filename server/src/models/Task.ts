@@ -13,7 +13,7 @@ const taskSchema = new Schema<Task>({
     },
     isCompleted: {
         type: Boolean,
-        defau: false,
+        default: false,
     }
 },
     {

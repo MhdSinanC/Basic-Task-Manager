@@ -3,14 +3,9 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
-import { isValidTask, type Task } from './task.js';
+import { isValidTask } from './task.js';
 import { TaskModel } from './models/Task.js';
 import mongoose from 'mongoose';
-
-let tasks: Task[] = [
-    { id: 1, title: 'Brush teeth', isCompleted: true },
-    { id: 2, title: 'Take notes', isCompleted: false }
-]
 
 const app = express();
 const PORT = process.env.PORT || 3000;
