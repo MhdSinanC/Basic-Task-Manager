@@ -11,8 +11,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || '';
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    process.env.CLIENT_URL
+].filter((origin): origin is string => Boolean(origin));
+
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: allowedOrigins
 }))
 app.use(express.json());
 

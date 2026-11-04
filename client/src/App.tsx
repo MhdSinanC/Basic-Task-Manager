@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import NewTask from './components/NewTask.tsx';
 import TaskList from './components/TaskList.tsx';
 import type { Task } from './types.ts';
+import { API_BASE_URL } from './config.ts';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ function App() {
 
   const handleTaskUpdate = async (id: string, isCompleted: boolean) => {
     try {
-      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -40,7 +41,7 @@ function App() {
 
   const handleTaskDeleted = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: 'DELETE'
       });
 
@@ -60,7 +61,7 @@ function App() {
     const fetchTasks = async () => {
       try {
         setError(null);
-        const res = await fetch('http://localhost:3000/tasks');
+        const res = await fetch(`${API_BASE_URL}/tasks`);
 
         if (!res.ok) {
           throw new Error('Failed to fetch tasks');

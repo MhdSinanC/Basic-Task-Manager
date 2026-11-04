@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Task } from "../types.ts";
+import { API_BASE_URL } from "../config.ts";
 
 type NewTaskProps = {
     onTaskCreated: (task: Task) => void;
@@ -28,7 +29,7 @@ export default function NewTask({ onTaskCreated }: NewTaskProps) {
 
             setIsSubmitting(true);
 
-            const res = await fetch('http://localhost:3000/tasks', {
+            const res = await fetch(`${API_BASE_URL}/tasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
