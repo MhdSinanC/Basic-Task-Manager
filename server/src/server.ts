@@ -27,10 +27,17 @@ app.use(express.json());
 //get tasks
 app.get('/tasks', async (req, res) => {
     try {
-        const tasks = await TaskModel.find();
-        res.json(tasks);
+        const userId = req.headers['x-user-id'] as string;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID required' });
+        }
+
+        const tasks = await TaskModel.find({ userId });
+        return res.json(tasks);
+
     } catch (e) {
-        res.status(500).json({ message: 'Error fetching tasks' });
+        return res.status(500).json({ message: 'Error fetching tasks' });
     }
 })
 
@@ -44,11 +51,18 @@ app.post('/tasks', async (req, res) => {
             return res.status(400).json({ message: 'Task is invalid' })
         }
 
+        const userId = req.headers['x-user-id'] as string;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID required' });
+        }
+
         const { title, isCompleted } = req.body;
 
         const newTask = await TaskModel.create({
             title: title.trim(),
-            isCompleted: Boolean(isCompleted)
+            isCompleted: Boolean(isCompleted),
+            userId: userId
         })
 
         return res.status(201).json(newTask);
@@ -71,8 +85,13 @@ app.patch('/tasks/:id', async (req, res) => {
             });
         }
 
+        const userId = req.headers['x-user-id'] as string;
         const { id } = req.params;
         const { isCompleted } = req.body;
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID required' });
+        }
 
         if (!mongoose.isValidObjectId(id)) {
             return res.status(400).json({
@@ -84,9 +103,9 @@ app.patch('/tasks/:id', async (req, res) => {
             return res.status(400).json({ message: "Bad Request" })
         }
 
-        const updatedTask = await TaskModel.findByIdAndUpdate(
-            id,
-            { isCompleted },
+        const updatedTask = await TaskModel.findOneAndUpdate(
+            { _id: id, userId },
+            { isCompleted: isCompleted },
             { new: true }  //returns the updated document
         );
 
@@ -111,6 +130,7 @@ app.delete('/tasks/:id', async (req, res) => {
     try {
 
         const { id } = req.params;
+        const userId = req.headers['x-user-id'] as string;
 
         if (!mongoose.isValidObjectId(id)) {
             return res.status(400).json({
@@ -118,7 +138,11 @@ app.delete('/tasks/:id', async (req, res) => {
             });
         }
 
-        const deletedTask = await TaskModel.findByIdAndDelete(id);
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID required' });
+        }
+
+        const deletedTask = await TaskModel.findOneAndDelete({ _id: id, userId });
 
         if (!deletedTask) {
             return res.status(404).json({ message: 'Task not found' });

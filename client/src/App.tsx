@@ -3,6 +3,7 @@ import NewTask from './components/NewTask.tsx';
 import TaskList from './components/TaskList.tsx';
 import type { Task } from './types.ts';
 import { API_BASE_URL } from './config.ts';
+import { getUserId } from './user.ts';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,8 @@ function App() {
       const res = await fetch(`${API_BASE_URL}/tasks/${id}`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-user-id': getUserId()
         },
         body: JSON.stringify({ isCompleted })
       });
@@ -42,7 +44,10 @@ function App() {
   const handleTaskDeleted = async (id: string) => {
     try {
       const res = await fetch(`${API_BASE_URL}/tasks/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'x-user-id': getUserId()
+        }
       });
 
       if (!res.ok) {
@@ -57,11 +62,16 @@ function App() {
     }
   };
 
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
         setError(null);
-        const res = await fetch(`${API_BASE_URL}/tasks`);
+        const res = await fetch(`${API_BASE_URL}/tasks`, {
+          headers: {
+            'x-user-id': getUserId()
+          }
+        });
 
         if (!res.ok) {
           throw new Error('Failed to fetch tasks');

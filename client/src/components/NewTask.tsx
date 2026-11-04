@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Task } from "../types.ts";
 import { API_BASE_URL } from "../config.ts";
+import { getUserId } from "../user.ts";
 
 type NewTaskProps = {
     onTaskCreated: (task: Task) => void;
@@ -32,7 +33,8 @@ export default function NewTask({ onTaskCreated }: NewTaskProps) {
             const res = await fetch(`${API_BASE_URL}/tasks`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-user-id': getUserId()
                 },
                 body: JSON.stringify(newTask)
             });

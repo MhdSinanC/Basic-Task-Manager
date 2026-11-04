@@ -3,9 +3,15 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface Task extends Document {
     title: string;
     isCompleted: boolean;
+    userId: string;
 }
 
 const taskSchema = new Schema<Task>({
+    userId: {
+        type: String,
+        required: true,
+        index: true
+    },
     title: {
         type: String,
         required: true,
