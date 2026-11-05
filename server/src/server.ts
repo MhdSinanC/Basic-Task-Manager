@@ -157,6 +157,11 @@ app.delete('/tasks/:id', async (req, res) => {
 
 
 
+// Health check route for keep-alive pings
+app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+});
+
 
 
 async function startServer() {
@@ -167,6 +172,20 @@ async function startServer() {
         app.listen(PORT, () => {
             console.log(`Server running on PORT: ${PORT}`)
         });
+
+        const BACKEND_URL = process.env.BACKEND_URL;
+
+        if (BACKEND_URL) {
+
+            setInterval(async () => {
+                try {
+                    await fetch(`${BACKEND_URL}/health`);
+                    console.log('Self-ping successful: Server kept awake');
+                } catch (e) {
+                    console.error('Self-ping failed: ', e);
+                }
+            }, 14 * 60 * 1000)
+        }
 
     } catch (e) {
         console.error('Failed to connect to MongoDB:', e);
